@@ -21,17 +21,26 @@ def options(*items):
     print()
 
 
-def table(heads, students):
-    """Prints a list of students. Currently specific only to tutoring implementation
-    may make more general and extensible in the future. Both heads and students
-    must be lists. Heads must have exactly 6 elements, each of which is a tuple
-    specifying the head text and its desired length. Students must be a list
-    of students who each have dicts of exactly 6 length, whose keys match
-    the elements of heads exactly. The sum of all of the desired lengths of heads
-    may not exceed 80."""
-    # Print heads
+def table(heads, objects):
+    """Prints a table of objects.
+
+    * heads must be given as a list of tuples, with the first element being the
+    heading text, and the second element being the desired column span.
+    The sum of all of the desired column spans may not exceed 80.
+
+    * objects must be given as a list of objects. Each object must have a dict
+    whose keys match heading texts from heads *exactly* (don't worry if this means
+    your elements in heads will be lowercase - they will be capitalized automatically).
+
+    Example:
+    heads = [("first", 10), ("last", 10), ("email", 15)]
+    objects = [Person1, Person2]
+    Person1.__dict__ = \{"first": "John", "last": "Doe", "email": "johndoe@gmail.com"\}
+    """
+    # Check column span sum
     if sum(h[1] for h in heads) > 80:
         print("Error: cannot print table (heading size exceeds 80 chars).")
+    # Print heads
     for h in heads:
         # Remember each h has both its text in h[0] and its desired length in h[1].
         trimmed_head = h[0][0:(h[1] - 2)] + ("." if len(h[0]) >= (h[1] - 2) else "")
@@ -41,7 +50,7 @@ def table(heads, students):
     print()
     bar(80)
     # Print student info
-    for s in students:
+    for s in objects:
         for h in heads:
             info = s.__dict__[h[0]]
             trimmed_info = info[0:(h[1] - 2)] + ("-" if len(info) >= (h[1] - 2) else "")
