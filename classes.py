@@ -100,17 +100,46 @@ class TransactionRecord:
     Transactions are given as session object types and are stored as a list.
     """
     def __init__(self):
-        self.transaction_record = []
+        self.transactions = []
+
+    def __str__(self):
+        return "{0} transactions on record.".format(len(self.transactions))
 
     def add(session):
         """Adds a new session to transaction record. Must supply Session object."""
-        self.transaction_record.append(session)
-        self.transaction_record.sort()
+        self.transactions.append(session)
+        self.transactions.sort()
 
     def remove(date, name):
         """Removes a session specified by date and student name. Provide full
         student name a a single string, method will handle splitting."""
         fname, lname = name.split()[0], name.split()[1]
-        for (i, s) in enumerate(self.transaction_record):
+        for (i, s) in enumerate(self.transactions):
             if s.date == date and s.student.first == fname and s.student.last = lname:
-                self.transaction_record.pop(i)
+                self.transactions.pop(i)
+                return True
+        return False
+
+
+class StudentList:
+    """
+    Defines list of students data type.
+
+    Students are given as student object types and are stored as a list.
+    """
+    def __init__(self):
+        self.students = []
+
+    def add(student):
+        """Adds a new student to student list. Must supply student object."""
+        self.students.append(student)
+
+    def remove(name):
+        """Removes a student specified by student name. Provide full
+        student name a a single string, method will handle splitting."""
+        fname, lname = name.split()[0], name.split()[1]
+        for (i, s) in enumerate(self.students):
+            if s.first == fname and s.last = lname:
+                self.students.pop(i)
+                return True
+        return False
