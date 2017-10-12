@@ -14,7 +14,7 @@ class Student:
         self.phone = pnum
         self.email = eaddr
         self.subject = subj
-        self.note = notes
+        self.notes = notes
 
     def __str__(self):
         return "{} {}".format(self.first, self.last)
@@ -27,6 +27,7 @@ class Student:
             return False
         else:
             self.__dict__[field] = newval
+            return True
 
 
 class Session:
@@ -59,11 +60,7 @@ class Session:
         self.charge = self.duration * self.rate
 
     def __str__(self):
-        return "Session on {0} with {1} from {2} to {3} ({4} hours @ ${5}/hr), "
-               "total charges ${6} by {7}, {8}. Notes: {9} ".format(str(self.date),
-               str(self.student), str(self.start), str(self.end), self.duration,
-               self.rate, self.charge, self.method, "payment recieved" if self.received
-               else "payment NOT received", self.notes)
+        return "Session on {0} with {1} from {2} to {3} ({4} hours @ ${5}/hr), total charges ${6} by {7}, {8}. Notes: {9} ".format(str(self.date), str(self.student), str(self.start), str(self.end), self.duration, self.rate, self.charge, self.method, "payment recieved" if self.received else "payment NOT received", self.notes)
 
     def __lt__(self, other):
         return self.start < other.start
@@ -91,6 +88,7 @@ class Session:
             return False
         else:
             self.__dict__[field] = newval
+            return True
 
 
 class TransactionRecord:
@@ -105,19 +103,34 @@ class TransactionRecord:
     def __str__(self):
         return "{0} transactions on record.".format(len(self.transactions))
 
-    def add(session):
+    def add(self, session):
         """Adds a new session to transaction record. Must supply Session object."""
         self.transactions.append(session)
         self.transactions.sort()
 
-    def remove(date, name):
+    def remove(self, date, name):
         """Removes a session specified by date and student name. Provide full
         student name a a single string, method will handle splitting."""
-        fname, lname = name.split()[0], name.split()[1]
+        try:
+            fname, lname = name.split()[0], name.split()[1]
+        except IndexError:
+            return False
         for (i, s) in enumerate(self.transactions):
-            if s.date == date and s.student.first == fname and s.student.last = lname:
+            if s.date == date and s.student.first == fname and s.student.last == lname:
                 self.transactions.pop(i)
                 return True
+        return False
+
+    def update(self, date, name, field, newval):
+        """Updates a session's info specified by date and student name. Provide full
+        student name a a single string, method will handle splitting."""
+        try:
+            fname, lname = name.split()[0], name.split()[1]
+        except IndexError:
+            return False
+        for (i, s) in enumerate(self.transactions):
+            if s.date == date and s.student.first == fname and s.student.last == lname:
+                return s.update(field, newval)
         return False
 
 
@@ -130,16 +143,31 @@ class StudentList:
     def __init__(self):
         self.students = []
 
-    def add(student):
+    def add(self, student):
         """Adds a new student to student list. Must supply student object."""
         self.students.append(student)
 
-    def remove(name):
+    def remove(self, name):
         """Removes a student specified by student name. Provide full
         student name a a single string, method will handle splitting."""
-        fname, lname = name.split()[0], name.split()[1]
+        try:
+            fname, lname = name.split()[0], name.split()[1]
+        except IndexError:
+            return False
         for (i, s) in enumerate(self.students):
-            if s.first == fname and s.last = lname:
+            if s.first == fname and s.last == lname:
                 self.students.pop(i)
                 return True
+        return False
+
+    def update(self, name, field, newval):
+        """Updates a student's information, specified by name. Provide full
+        student name a a single string, method will handle splitting."""
+        try:
+            fname, lname = name.split()[0], name.split()[1]
+        except IndexError:
+            return False
+        for (i, s) in enumerate(self.students):
+            if s.first == fname and s.last == lname:
+                return s.update(field, newval)
         return False
