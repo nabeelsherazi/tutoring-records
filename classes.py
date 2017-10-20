@@ -133,6 +133,18 @@ class TransactionRecord:
                 return s.update(field, newval)
         return False
 
+    def get(self, date, name):
+        """Returns a Session object specified by date and student name. Provide full
+        student name a a single string, method will handle splitting."""
+        try:
+            fname, lname = name.split()[0], name.split()[1]
+        except IndexError:
+            return False
+        for (i, s) in enumerate(self.transactions):
+            if s.date == date and s.student.first == fname and s.student.last == lname:
+                return s
+        return False
+
 
 class StudentList:
     """
@@ -170,4 +182,16 @@ class StudentList:
         for (i, s) in enumerate(self.students):
             if s.first == fname and s.last == lname:
                 return s.update(field, newval)
+        return False
+
+    def get(self, name):
+        """Returns a student object, specified by name. Provide full
+        student name a a single string, method will handle splitting."""
+        try:
+            fname, lname = name.split()[0], name.split()[1]
+        except IndexError:
+            return False
+        for (i, s) in enumerate(self.students):
+            if s.first == fname and s.last == lname:
+                return s
         return False
