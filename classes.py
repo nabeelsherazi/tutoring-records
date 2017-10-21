@@ -1,4 +1,13 @@
 import datetime
+import prettyCLI as pretty
+
+# TODO thoughts:
+# 1) implement printing of student list and transaction records inside of class
+# itself, like print_self function.
+# 2) Make all object creations take strings only, so that main function only
+# does CLI interfacing. All object creation should be handled inside of the class
+# when it's passed a string. I should be able to pass Session a string for
+# session date and have it create the datetime.date object within itself.
 
 
 class Student:
@@ -18,6 +27,24 @@ class Student:
 
     def __str__(self):
         return "{} {}".format(self.first, self.last)
+
+    def __lt__(self, other):
+        return self.first < other.first
+
+    def __le__(self, other):
+        return self.first <= other.first
+
+    def __gt__(self, other):
+        return self.first > other.first
+
+    def __ge__(self, other):
+        return self.first >= other.first
+
+    def __eq__(self, other):
+        return self.first == other.first
+
+    def __ne__(self, other):
+        return self.first != other.first
 
     def update(self, field, newval):
         """Updates student field, specified as string, to newval."""
@@ -130,7 +157,9 @@ class TransactionRecord:
             return False
         for (i, s) in enumerate(self.transactions):
             if s.date == date and s.student.first == fname and s.student.last == lname:
-                return s.update(field, newval)
+                updated = s.update(field, newval)
+                self.transactions.sort()
+                return updated
         return False
 
     def get(self, date, name):
@@ -158,6 +187,7 @@ class StudentList:
     def add(self, student):
         """Adds a new student to student list. Must supply student object."""
         self.students.append(student)
+        self.students.sort()
 
     def remove(self, name):
         """Removes a student specified by student name. Provide full
@@ -181,7 +211,9 @@ class StudentList:
             return False
         for (i, s) in enumerate(self.students):
             if s.first == fname and s.last == lname:
-                return s.update(field, newval)
+                updated = s.update(field, newval)
+                self.students.sort()
+                return updated
         return False
 
     def get(self, name):
@@ -195,3 +227,42 @@ class StudentList:
             if s.first == fname and s.last == lname:
                 return s
         return False
+
+    def print_table(start="a", end="z"):
+        """ Prints self """
+        # Get subsection to print
+        start, end = start.lower(), end.lower()
+        if end < start:
+            raise ValueError
+        for i, s in enumerate(self.students):
+            if s.first[0].lower() >= start:  # Start printing at the first name after our start point
+                start_ix = i
+                break
+        for i, s in enumerate(self.students):
+            if s.first[0].lower() > end:  # Stop printing at one before first name after end
+                end_ix = i - 1
+        to_print = self.students[start_ix:end_ix]
+
+        # Print head
+        col_spans = [10, 20, 10, 10, 5, 5, 5, 15]
+        for student in to_print:  # Actually only need the first one
+            for head, span in zip(student.__dict__, col_spans):
+                assert len(col_spans) == len(student.__dict__)  # This is for you!
+                # Remember each h has both its text in h[0] and its desired length in h[1].
+                trimmed_head = head[0:(span - 2)] + ("." if len(head) > (span - 1) else "")
+                # Does nothing if column span is greater than heading length + 2 spaces,
+                # but slices and abbreviates with "." if not.
+                print(trimmed_head.capitalize() + (" " * (span - len(trimmed_head))), end="")
+            break
+        print()
+        pretty.print_bar(80)
+
+        # Print student info
+        for student in to_print:
+            for head, span in zip(student.__dict__, col_spans):
+                info = student.__dict__[head]
+                # The trimmed info will be a slice plus a dash if the length of the original info
+                # was greater than the column span.
+                trimmed_info = info[0:(span - 2)] + ("-" if len(info) > (span - 2) else "")
+                print(trimmed_info + (" " * (span - len(trimmed_info))), end="")
+            print()
