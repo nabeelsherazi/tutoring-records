@@ -3,6 +3,7 @@ import pickle
 import datetime
 from classes import Student, Session, TransactionRecord, StudentList
 import prettyCLI as pretty
+import field_validation as valid
 
 
 def setup():
@@ -43,7 +44,7 @@ def main(student_list, transaction_record):
     Main function. Accepts an active record and provides a nice walk through to
     faciliate recordkeeping actions.
     """
-    pretty.print_marquee("Welcome to Tutor Stuff (name pending)")
+    pretty.print_marquee("Tutor Tracker v0.3")
     while True:
         print("What would you like to do? (type either option number or [keyword])")
         pretty.print_options("[Students] List", "[Record] of Transactions", "[Exit]")
@@ -87,8 +88,15 @@ def students_subroutine(student_list):
         inp = input().lower()
 
         if inp == "1" or inp == "view":
+            start = end = None
+            start_inp = input("First letter to start at? (Leave blank to start at beginning)\n")
+            if start_inp and valid.is_letter(start_inp):
+                start = start_inp
+            end_inp = input("First letter to end at? (Leave blank to go until end)\n")
+            if end_inp and valid.is_letter(end_inp):
+                end = end_inp
             pretty.print_bar(80)
-            pretty.print_table([("first", 10), ("last", 10), ("phone", 14), ("email", 20), ("subject", 13), ("notes", 13)], student_list.students)
+            student_list.print_table()
             input("Press enter to return.")
 
         elif inp == "2" or inp == "add":
@@ -166,7 +174,7 @@ def students_subroutine(student_list):
             # Finishes method and returns to place in main() stack loop.
             return
         else:
-            pretty.print_bar(80)
+            pretty.print_bar(80, "!")
             print("Input not understood. Type either an option number or a [keyword].")
 
 
@@ -276,7 +284,7 @@ def record_subroutine(student_list, transaction_record):
             # Finishes method and returns to place in main() stack loop.
             return
         else:
-            pretty.print_bar(80)
+            pretty.print_bar(80, "!")
             print("Input not understood. Type either an option number or a [keyword].")
 
 
@@ -308,7 +316,7 @@ def datetime_builder(output, of=None):
             if h is None:
                 try:
                     h = int(input("{0} hour?\n".format(of.capitalize())))
-                    assert 1 <= h <= 12
+                    assert 1 <= h <= 1
                 except (ValueError, AssertionError):
                     print("Invalid entry (hour must be range 1-12).")
                     continue
