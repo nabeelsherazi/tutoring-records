@@ -37,9 +37,6 @@ def print_table(heads, objects):
     objects = [Person1, Person2]
     Person1.__dict__ = \{"first": "John", "last": "Doe", "email": "johndoe@gmail.com"\}
     """
-    # Check column span sum
-    if sum(h[1] for h in heads) > 80:
-        print("Error: cannot print table (heading size exceeds 80 chars).")
     # Print heads
     for h in heads:
         # Remember each h has both its text in h[0] and its desired length in h[1].
@@ -67,18 +64,7 @@ def print_transaction_table(heads, objects):
     heading text, and the second element being the desired column span.
     The sum of all of the desired column spans may not exceed 80.
 
-    * objects must be given as a list of objects. Each object must have a dict
-    whose keys match heading texts from heads *exactly* (don't worry if this means
-    your elements in heads will be lowercase - they will be capitalized automatically).
-
-    Example:
-    heads = [("first", 10), ("last", 10), ("email", 15)]
-    objects = [Person1, Person2]
-    Person1.__dict__ = \{"first": "John", "last": "Doe", "email": "johndoe@gmail.com"\}
     """
-    # Check column span sum
-    if sum(h[1] for h in heads) > 80:
-        print("Error: cannot print table (heading size exceeds 80 chars).")
     # Print heads
     for h in heads:
         # Remember each h has both its text in h[0] and its desired length in h[1].
@@ -89,3 +75,13 @@ def print_transaction_table(heads, objects):
     print()
     print_bar(80)
     # Print student info
+
+
+def time(datetime_obj):
+    """Formats datetime.time or datetime.datetime objects into 12 hour time."""
+    return datetime_obj.strftime("%I:%m %p")
+
+
+def date(date_obj):
+    """Formats datetime.date objects into MM/DD/YYYY syntax."""
+    return date_obj.strftime("%m/%d/%Y")
