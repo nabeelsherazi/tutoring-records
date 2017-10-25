@@ -1,5 +1,6 @@
 import datetime
 import prettyCLI as pretty
+from init import PROGRAM_WIDTH, BORDER_SYM, ALERT_SYM
 
 # TODO thoughts:
 # 1) implement printing of student list and transaction records inside of class
@@ -80,10 +81,6 @@ class Session:
         self.method = pmt_method.upper()
         self.received = pmt_received
         self.notes = notes
-        #  Subtracting two datetime.datetime objects creates a new
-        #  datetime.timedelta, of which we take the number of seconds attribute
-        #  and floor divide by 3600 to get the number of billable hours in the
-        #  session.
         self.calculate_charge()
 
     def __str__(self):
@@ -108,6 +105,10 @@ class Session:
         return self.start != other.start
 
     def calculate_charge(self):
+        #  Subtracting two datetime.datetime objects creates a new
+        #  datetime.timedelta, of which we take the number of seconds attribute
+        #  and floor divide by 3600 to get the number of billable hours in the
+        #  session.
         self.duration = ((self.end - self.start).seconds) // 3600
         self.charge = self.duration * self.rate
 
@@ -179,8 +180,13 @@ class TransactionRecord:
                 return s
         return False
 
-    def print_table(self, start=None, end=None):
-        """ Prints self """
+    def print_table(self, start=datetime.date.min, end=datetime.date.max):
+        """
+        Prints transaction list, starting at date start and ending at date end.
+        Both start and end must be supplied as datetime.date objects, as
+        the class uses their built in comparison methods to find where to slice
+        the list.
+        """
         # Get subsection to print
         start_ix = end_ix = None
         if len(self.transactions) == 0:
@@ -193,21 +199,23 @@ class TransactionRecord:
                 start_ix = i
                 break
         if start_ix is None:
-            start_ix = len(self.transactions) - 1
+            start_ix = len(self.transactions)
         for i, s in enumerate(self.transactions):
             if s.date > end:  # Stop printing at one before first name after end
                 end_ix = i - 1
                 break
         if end_ix is None:
-            end_ix = len(self.transactions) - 1
+            end_ix = len(self.transactions)
 
         to_print = self.transactions[start_ix:end_ix]
 
         # Print head
-        col_spans = [10, 20, 10, 10, 7, 7, 7, 20, 15, 15]
+        col_spans = [11, 20, 10, 10, 10, 7, 9, 8, 10, 25]
+        heads = ["date", "student", "start", "end", "duration", "rate", "charge", "method", "received", "notes"]
+        # Have to do it this way because dicts are unsorted :(
         for session in to_print:  # Actually only need the first one
             assert len(col_spans) == len(session.__dict__)  # This is for you!
-            for head, span in zip(session.__dict__, col_spans):  # Zips each
+            for head, span in zip(heads, col_spans):  # Zips each
                 # heading and span length as a tuple and then unpacks it into the for loop
                 # so they can be accessed together exclusively... I'm clever, see!
                 trimmed_head = head[0:(span - 2)] + ("." if len(head) > (span - 1) else "")
@@ -216,13 +224,15 @@ class TransactionRecord:
                 print(trimmed_head.capitalize() + (" " * (span - len(trimmed_head))), end="")
             break
         print()
-        pretty.print_bar(80)
+        pretty.print_bar(PROGRAM_WIDTH)
 
         # Print student info
         for session in to_print:
-            for head, span in zip(session.__dict__, col_spans):
+            for head, span in zip(heads, col_spans):
                 if head == "start" or head == "end":
                     info = pretty.time(session.__dict__[head])
+                if head == "duration":
+                    info = str(session.__dict__[head]) + (" hour" if session.__dict__[head] == 1 else " hours")
                 else:
                     info = str(session.__dict__[head])
                 # The trimmed info will be a slice plus a dash if the length of the original info
@@ -230,11 +240,6 @@ class TransactionRecord:
                 trimmed_info = info[0:(span - 2)] + ("-" if len(info) > (span - 2) else "")
                 print(trimmed_info + (" " * (span - len(trimmed_info))), end="")
             print()
-
-
-
-
-
 
 
 class StudentList:
@@ -291,7 +296,11 @@ class StudentList:
         return False
 
     def print_table(self, start="a", end="z"):
-        """ Prints self """
+        """
+        Prints student list, starting with students whose first names begin with
+        start and ending at students whose first names begin with end. Both must
+        be provided as single ASCII letters.
+        """
         # Get subsection to print
         start, end = start.lower(), end.lower()
         start_ix = end_ix = None
@@ -311,12 +320,12 @@ class StudentList:
                 end_ix = i - 1
                 break
         if end_ix is None:
-            end_ix = len(self.students) - 1
+            end_ix = len(self.students)
 
         to_print = self.students[start_ix:end_ix]
 
         # Print head
-        col_spans = [15, 15, 12, 20, 18, 20]
+        col_spans = [12, 12, 13, 30, 23, 30]
         for student in to_print:  # Actually only need the first one
             assert len(col_spans) == len(student.__dict__)  # This is for you!
             for head, span in zip(student.__dict__, col_spans):  # Zips each
@@ -328,7 +337,7 @@ class StudentList:
                 print(trimmed_head.capitalize() + (" " * (span - len(trimmed_head))), end="")
             break
         print()
-        pretty.print_bar(80)
+        pretty.print_bar(PROGRAM_WIDTH)
 
         # Print student info
         for student in to_print:
