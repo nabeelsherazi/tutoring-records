@@ -1,16 +1,23 @@
-def print_bar(length, sym="="):
+"""
+Helper module to prettify some common CLI printing tasks.
+"""
+
+from init import PROGRAM_WIDTH, BORDER_SYM, ALERT_SYM
+
+
+def print_bar(length, sym=BORDER_SYM):
     """Creates a bar of length length with symbol sym."""
     print(sym * length)
 
 
-def print_marquee(text, height=3, sym="="):
+def print_marquee(text, height=3, sym=BORDER_SYM):
     """Prints a pretty marquee with symbol sym around text."""
-    print_bar(80, sym)
-    print((sym + (" " * 78) + sym + "\n") * (height // 2), end="")
-    print(sym + (" " * ((78 - len(text)) // 2)) + (" " if len(text) % 2 != 0 else "") +
-          text + (" " * ((78 - len(text)) // 2)) + sym)
-    print((sym + (" " * 78) + sym + "\n") * (height // 2), end="")
-    print_bar(80, sym)
+    print_bar(PROGRAM_WIDTH, sym)
+    print((sym + (" " * (PROGRAM_WIDTH - 2)) + sym + "\n") * (height // 2), end="")
+    print(sym + (" " * (((PROGRAM_WIDTH - 2) - len(text)) // 2)) + (" " if len(text) % 2 != 0 else "") +
+          text + (" " * (((PROGRAM_WIDTH - 2) - len(text)) // 2)) + sym)
+    print((sym + (" " * (PROGRAM_WIDTH - 2)) + sym + "\n") * (height // 2), end="")
+    print_bar(PROGRAM_WIDTH, sym)
 
 
 def print_options(*items):
@@ -26,7 +33,7 @@ def print_table(heads, objects):
 
     * heads must be given as a list of tuples, with the first element being the
     heading text, and the second element being the desired column span.
-    The sum of all of the desired column spans may not exceed 80.
+    The sum of all of the desired column spans may not exceed PROGRAM_WIDTH.
 
     * objects must be given as a list of objects. Each object must have a dict
     whose keys match heading texts from heads *exactly* (don't worry if this means
@@ -45,7 +52,7 @@ def print_table(heads, objects):
         # but slices and abbreviates with "." if not.
         print(trimmed_head.capitalize() + (" " * (h[1] - len(trimmed_head))), end="")
     print()
-    print_bar(80)
+    print_bar(PROGRAM_WIDTH)
     # Print student info
     for s in objects:
         for h in heads:
@@ -62,7 +69,7 @@ def print_transaction_table(heads, objects):
 
     * heads must be given as a list of tuples, with the first element being the
     heading text, and the second element being the desired column span.
-    The sum of all of the desired column spans may not exceed 80.
+    The sum of all of the desired column spans may not exceed PROGRAM_WIDTH.
 
     """
     # Print heads
@@ -73,13 +80,13 @@ def print_transaction_table(heads, objects):
         # but slices and abbreviates with "." if not.
         print(trimmed_head.capitalize() + (" " * (h[1] - len(trimmed_head))), end="")
     print()
-    print_bar(80)
+    print_bar(PROGRAM_WIDTH)
     # Print student info
 
 
 def time(datetime_obj):
     """Formats datetime.time or datetime.datetime objects into 12 hour time."""
-    return datetime_obj.strftime("%I:%m %p")
+    return datetime_obj.strftime("%I:%M %p")
 
 
 def date(date_obj):
