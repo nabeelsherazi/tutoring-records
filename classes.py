@@ -1,15 +1,10 @@
+"""
+Module that defines all data types used in program.
+"""
+
 import datetime
 import prettyCLI as pretty
 from init import PROGRAM_WIDTH, BORDER_SYM, ALERT_SYM
-
-# TODO thoughts:
-# 1) implement printing of student list and transaction records inside of class
-# itself, like print_self function.
-# 2) Make all object creations take strings only, so that main function only
-# does CLI interfacing. All object creation should be handled inside of the class
-# when it's passed a string. I should be able to pass Session a string for
-# session date and have it create the datetime.date object within itself.
-# Update: I think this is a bad idea.
 
 
 class Student:
@@ -63,7 +58,7 @@ class Session:
     """
     Defines tutoring session data type.
 
-    All paramters will be given as STRINGS and then internally converted into:
+    All paramaters must be given as follows:
     date -> datetime.date object
     start_time, end_time -> datetime.time objects
     rate -> float
@@ -231,7 +226,7 @@ class TransactionRecord:
             for head, span in zip(heads, col_spans):
                 if head == "start" or head == "end":
                     info = pretty.time(session.__dict__[head])
-                if head == "duration":
+                elif head == "duration":
                     info = str(session.__dict__[head]) + (" hour" if session.__dict__[head] == 1 else " hours")
                 else:
                     info = str(session.__dict__[head])
