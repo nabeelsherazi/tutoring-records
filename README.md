@@ -19,7 +19,7 @@ summary reports, seeings reminders about logging, and more.
 because i didn't want to pay for software and i thought it'd be a piece of cake
 to write myself lmao
 
-it wasn't
+(it wasn't)
 
 
 ## HOW TO USE:
