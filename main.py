@@ -256,6 +256,10 @@ def record_subroutine(student_list, transaction_record):
         inp = input().lower()
 
         if inp == "1" or inp == "view":
+            print("View mode?")
+            pretty.print_options("[Range]", "")
+
+
             try:
                 pretty.print_bar(PROGRAM_WIDTH)
                 print("Select a range of transactions to view.")
