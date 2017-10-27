@@ -175,67 +175,6 @@ class TransactionRecord:
                 return s
         return False
 
-    def print_table(self, start=datetime.date.min, end=datetime.date.max):
-        """
-        Prints transaction list, starting at date start and ending at date end.
-        Both start and end must be supplied as datetime.date objects, as
-        the class uses their built in comparison methods to find where to slice
-        the list.
-        """
-        # Get subsection to print
-        start_ix = end_ix = None
-        if len(self.transactions) == 0:
-            print("No transactions on record.")
-            return
-        if end < start:
-            raise ValueError("Invalid start/end pair.")
-        for i, s in enumerate(self.transactions):
-            if s.date >= start:  # Start printing at the first name after our start point
-                start_ix = i
-                break
-        if start_ix is None:
-            start_ix = len(self.transactions)
-        for i, s in enumerate(self.transactions):
-            if s.date > end:  # Stop printing at one before first name after end
-                end_ix = i - 1
-                break
-        if end_ix is None:
-            end_ix = len(self.transactions)
-
-        to_print = self.transactions[start_ix:end_ix]
-
-        # Print head
-        col_spans = [11, 20, 10, 10, 10, 7, 9, 8, 10, 25]
-        heads = ["date", "student", "start", "end", "duration", "rate", "charge", "method", "received", "notes"]
-        # Have to do it this way because dicts are unsorted :(
-        for session in to_print:  # Actually only need the first one
-            assert len(col_spans) == len(session.__dict__)  # This is for you!
-            for head, span in zip(heads, col_spans):  # Zips each
-                # heading and span length as a tuple and then unpacks it into the for loop
-                # so they can be accessed together exclusively... I'm clever, see!
-                trimmed_head = head[0:(span - 2)] + ("." if len(head) > (span - 1) else "")
-                # Does nothing if column span is greater than heading length + 2 spaces,
-                # but slices and abbreviates with "." if not.
-                print(trimmed_head.capitalize() + (" " * (span - len(trimmed_head))), end="")
-            break
-        print()
-        pretty.print_bar(PROGRAM_WIDTH)
-
-        # Print student info
-        for session in to_print:
-            for head, span in zip(heads, col_spans):
-                if head == "start" or head == "end":
-                    info = pretty.time(session.__dict__[head])
-                elif head == "duration":
-                    info = str(session.__dict__[head]) + (" hour" if session.__dict__[head] == 1 else " hours")
-                else:
-                    info = str(session.__dict__[head])
-                # The trimmed info will be a slice plus a dash if the length of the original info
-                # was greater than the column span.
-                trimmed_info = info[0:(span - 2)] + ("-" if len(info) > (span - 2) else "")
-                print(trimmed_info + (" " * (span - len(trimmed_info))), end="")
-            print()
-
 
 class StudentList:
     """
